@@ -154,3 +154,69 @@ INSERT INTO EMP(EMPNO, ENAME, JOB, MGR, HIREDATE, SAL, COMM, DEPTNO)
 	VALUES(1001, 'JAME%S', 'MANAGER', 7839, '2024.10.15', 3500, 450, 30);
 	
 SELECT * FROM EMP;
+
+DELETE FROM EMP
+	WHERE EMPNO = 1001;
+	
+SELECT * FROM EMP;
+
+-- is null 연산자 :
+-- 데이터 값에는 Null값을 가질수 있음, 값이 정해지지 않음을 의미, 연산불가(계산, 비교, 할당)
+SELECT ENAME, SAL, SAL*12 + COMM "연봉", COMM -- COMM 이 있는사람과 없는사람이 있기때문에 NULL이 나옴, 계산 자체가 성립되지 않기때문에
+	FROM EMP;
+
+-- 비교 연산으로 NULL 비교하기
+SELECT * FROM EMP
+	WHERE COMM = NULL -- NULL은 비교 불가 이므로 결과가 나오지 않음
+	
+-- 해당 DATA가 NULL인지 실제 확인하는 방법은 is NULL 연산자를 사용해야 함
+SELECT * FROM EMP
+	WHERE COMM IS NULL;
+
+-- 해당 DATA가 NULL이 아닌 DATA만 출력하기
+SELECT * FROM EMP
+	WHERE COMM IS NOT NULL;
+
+-- 직속상관이 있는 사원 데이터 출력하기
+SELECT * FROM EMP
+	WHERE MGR IS NULL;
+
+-- 정렬을 위한 ORDER BY 절 : 오름차순 또는 내림차순 정렬 가능
+SELECT * FROM EMP
+	ORDER BY SAL DESC; -- 급여에 대한 오름 차순 정렬
+
+-- 사원번호 기준 내림차순 정렬하기
+SELECT * FROM EMP
+	ORDER BY EMPNO DESC;
+	
+-- 정렬 조건을 여러 컬럼을 설정하기
+SELECT * FROM EMP
+	ORDER BY SAL DESC, ENAME; -- 급여가 많은 사람순으로 정렬하고, 급여가 같으면 이름순 정렬
+	
+-- 별칭 사용과 ORDER BY (""는 공백이 생긴경우, 공백이없으면 "" 없어도 문자 사용가능)
+SELECT EMPNO 사원번호, ENAME 사원명, SAL 월급, HIREDATE 입사일 -- 3.출력해야할 컬럼 제한
+	FROM EMP -- 1.먼저 TABLE을 가져옴
+	WHERE SAL >= 2000 -- 2.해당 조건의 맞는 행(튜플)을 가져옴
+	ORDER BY 월급 DESC, 사원명 ASC; -- 4.마지막 정렬을 수행 함
+	
+-- 연결 연산자 : SELECT문 조회 시 컬럼 사이에 특정한 문자를 넣을 때 사용
+SELECT ENAME || '의 직책은' || JOB "사원 정보"
+	FROM EMP;
+	
+-- [실습문제1] 사원이름이 S로 끝나는 사원 데이터를 모두 출력
+SELECT * FROM EMP
+	WHERE ENAME LIKE '%S';
+
+-- [실습문제2] 30번 부서에 근무하고 있는 사원 중, 직책이 SALESMAN인 사원의 사원번호,
+-- 이름, 직책, 급여, 부서번호 출력
+
+-- [실습문제3] 20번과 30번 부서에 근무하고 있는 사원 중 급여가 2000초과인 사원의
+-- 사원번호, 이름, 직책, 급여, 부서번호 출력
+
+-- [실급문제4] 급여가 2000이상 3000 이하 범위 이외의 값을 가진 사원의 모든 정보 출력
+
+-- [실습문제5] 사원 이름에 E가 포함되어 있는 30번 부서의 사원 중 급여가 1000 ~ 2000 사이가
+-- 아닌 사원의 이름, 번호, 급여, 부서 번호 출력
+
+-- [실습문제6] 추가 수당이 존재하지 않고, 상급자가 존재하고 직채이 MANAGER, CLERK인 사원 중
+-- 사원 이름의 두 번째 글자가 L이 아닌 사원의 모든 정보출력
