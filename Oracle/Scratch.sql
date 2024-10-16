@@ -34,7 +34,88 @@ SELECT JOB,MAX(SAL) AS "MAX_SAL", MIN(SAL) AS "MIN_SAL"
 	FROM EMP
 	GROUP BY JOB;
 
+-- CASE문 CASE WHEN THEN 문 : WHEN이 참이면 THEN 값을 반환
+EMP 테이블에서 각 직원의 급여(SAL)에 대해 다음을 수행하시오:
+1.급여가 음수인 경우 그 급여의 절대값을 구하시오.
+2.급여가 양수인 경우에는 그대로 출력하시오.
+3.결과를 EMPNO와 ABS_SAL이라는 열 이름으로 출력하시오.
+조건: 직원의 EMPNO와 변환된 급여를 함께 출력하시오.
+SELECT EMPNO,
+	CASE
+		WHEN SAL < 0 THEN ABS(SAL)
+		ELSE SAL
+	END AS "ABS_SAL"
+	FROM EMP;
+-- ROUND문 지정한 소수점 번째 자리 반올림
+--문제
+--EMP 테이블에서 각 직원의 급여(SAL)를 소수점 둘째 자리까지 반올림하여 출력하시오. 결과는 EMPNO와 ROUND_SAL이라는 열 이름으로 출력해야 합니다.
+-- 조건
+-- ROUND 함수를 사용하여 급여를 반올림할 것.
+SELECT EMPNO, ROUND(SAL,2) AS "ROUND_SAL" FROM EMP;
+-- TRUNC문 지정한 소수점 번째 자리 버림
+-- EMP 테이블에서 각 직원의 급여(SAL)를 소수점 첫째 자리에서 잘라낸 값을 출력하시오. 결과는 EMPNO와 TRUNCATED_SAL이라는 열 이름으로 출력해야 합니다.
+-- 조건
+-- TRUNC 함수를 사용하여 급여를 잘라낼 것.
+SELECT EMPNO, TRUNC(SAL, 1) AS "TRUNCATED_SAL" FROM EMP;
+-- MOD문 목을 나눈 나머지 값을 구함
+--EMP 테이블에서 각 직원의 급여(SAL)를 500으로 나눈 나머지를 구하시오. 결과는 EMPNO와 SAL_MOD라는 열 이름으로 출력해야 합니다.
+--조건 MOD 함수를 사용하여 급여의 나머지를 계산할 것.
+SELECT EMPNO, MOD(SAL,500) AS "SAL_MOD" FROM EMP;
+-- CEIL문 소수점을 올림
+-- EMP 테이블에서 각 직원의 급여(SAL)를 올림하여 정수로 변환한 값을 출력하시오. 결과는 EMPNO와 CEIL_SAL이라는 열 이름으로 출력해야 합니다.
+SELECT EMPNO, CEIL(112321.1212) AS "CEIL_SAL" FROM EMP;
+-- FLOOR문 소수점 버림
+-- EMP 테이블에서 각 직원의 급여(SAL)를 내림하여 정수로 변환한 값을 출력하시오. 결과는 EMPNO와 FLOOR_SAL이라는 열 이름으로 출력해야 합니다.
+SELECT EMPNO, FLOOR(12534.41534) AS "FLOOR_SAL" FROM EMP;
+-- POWER문 지정한 값을 정한 수 만큼 제곱
+-- EMP 테이블에서 각 직원의 급여(SAL)의 제곱 값을 출력하시오. 결과는 EMPNO와 SAL_SQUARED라는 열 이름으로 출력해야 합니다.
+SELECT EMPNO, POWER(10,3) AS "SAL_SQUARED" FROM EMP;
+-- UPPER문,LOWER문,INITCAP문
+SELECT UPPER(ENAME), LOWER(ENAME), INITCAP(ENAME) FROM EMP; 
+-- UPPER 문자열 비교하기
+SELECT * FROM EMP
+WHERE UPPER(ENAME) LIKE '%S%';
+-- LENGTH,LENGTHB : 문자열 길이와 비트수 구하
+SELECT LENGTH('하니'), LENGTHB('하니') FROM DUAL;
+-- 직책 이름의 길이가 6글자 이상이고,COMM있는 사원의 모든 정보 출력
+SELECT * FROM EMP
+	WHERE LENGTH(JOB) >= 6
+	AND COMM IS NOT NULL
+	AND COMM ^= 0;
+-- SUBSTR문 선택한 문자열의 지정한 위치부터 지정한 개수만큼 출력
+SELECT ENAME, SUBSTR(ENAME, 3, 2) FROM EMP;
+-- SUBSTRB문
+SELECT SUBSTRB('오늘도만나서반갑습니다.', 1, 8) FROM DUAL;
+-- SUBSTR문 다른 함수와 같이사용하기
+-- EMP 테이블에서 각 직원의 이름(ENAME)의 첫 글자만 대문자로 변환하고,
+-- 나머지 글자는 소문자로 변환한 후, 이 이름의 첫 세 글자만 추출하시오.
+-- 결과는 EMPNO와 FORMATTED_NAME이라는 열 이름으로 출력해야 합니다.
+SELECT EMPNO, ENAME, SUBSTR(INITCAP(ENAME), 1, 3) AS "FORMATTED_NAME" FROM EMP;
+-- INSTR문 : 문자열에 특정 문자나 문자열의 인덱스를 찾을때
+SELECT INSTR('HI NICE TO MEET YOU TOO', 'TOO') FROM DUAL;
+-- EMP 테이블에서 다음 조건을 만족하는 쿼리를 작성하세요:
+-- 1.직원의 이름(ENAME)의 첫 글자를 대문자로 변환하고 나머지는 소문자로 변환합니다.
+-- 2.급여(SAL)가 3000 이상인 직원만 선택합니다.
+-- 3.직원의 급여를 10% 인상한 값을 NEW_SAL이라는 열 이름으로 반환합니다.
+-- 4.결과는 EMPNO, FORMATTED_NAME, NEW_SAL 순으로 출력합니다.
+-- 조건 INITCAP 함수를 사용하여 이름 형식을 변경하고, SAL에 1.1을 곱하여 새로운 급여를 계산할 것.
+-- 정렬 기준은 NEW_SAL을 기준으로 내림차순 정렬할 것.
+SELECT EMPNO,INITCAP(ENAME) AS "FORMATTED_NAME", SAL * 1.1 AS "NEW_SAL" FROM EMP
+	WHERE SAL >= 3000
+	ORDER BY NEW_SAL DESC;
+-- REPLACE문 특정 문자를 원하는 문자로 변경
+SELECT REPLACE('010-7126-3574', '-') FROM DUAL;
+-- LPAD/RPAD문
+SELECT LPAD('DRAGON', 10, '&') FROM DUAL 
+SELECT RPAD('DRAGON', 20, '@') FROM DUAL;
 
-
-
-
+SELECT EMPNO, ENAME, SAL,
+	TRUNC((SAL / 21.5 ),2) AS "DAY_PAY",
+	ROUND((SAL / (21.5 * 8)),1) AS "TIME_PAY"
+	FROM EMP;
+	
+SELECT EMPNO, ENAME, HIREDATE,
+	TO_CHAR(NEXT_DAY(ADD_MONTHS(HIREDATE, 3), '월요일'),'YYYY-MM-DD') AS "R_JOB",
+	NVL(TO_CHAR(COMM), 'N/A') AS "COMM"
+	FROM EMP;
+	
