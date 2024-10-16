@@ -199,9 +199,64 @@ SELECT SAL,
 	TO_CHAR(SAL, '000,999,999.00') AS SAL_2
 	FROM EMP;
 	
--- TO_NUMBER : 숫자 타입의 문자열을 숫자 데이터로 변환해주는 함수
+-- TO_NUMBER : 숫자 타입의 문자열을 숫자 데이터로 변환해주는 함수	
 SELECT 1300 - '1500', '1300' + '1500'
 	FROM DUAL;
 
 -- TO_DATE : 문자열로 명시된 날짜로 변환하는 함수
-SELECT TO_DATE('') 
+SELECT TO_DATE('24-10-24', 'YY/MM/DD') AS "날짜타입1",
+	TO_DATE('20240714', 'YYYY/MM/DD') AS "날짜타입2"
+	FROM DUAL;
+	
+-- 1981년 7월 1일 이후 입사한 사원 정보 출력하기
+SELECT * FROM EMP
+	WHERE HIREDATE > TO_DATE('1981/7/1', 'YYYY/MM/DD');
+	
+-- NULL 처리 함수 : 특정 열의 행에 DATA가 없는 경우 데이터 값이 NULL이 됨 (NULL 값이 없음)
+-- NULL : 값이 할당되지 않았기 때문에 공백이나 0과는 다른 의미, 연산(계산, 비교 등등)
+-- NVL(검사할 데이터 또는 열, 앞의 데이터가 NULL인 경우 대체할 값)
+SELECT EMPNO, ENAME, SAL, COMM, SAL + COMM,
+	NVL(COMM, 0),
+	SAL * 12 + NVL(COMM, 0) AS "연봉"
+	FROM EMP;
+	
+-- NVL2(검사할 데이터, 데이터가 NULL이 아닐때 반환 되는 값, 데이터가 NULL 일 때 반환되는값)
+SELECT EMPNO, ENAME, COMM,
+	NVL2(COMM, 'O', 'X') AS "NULL 유무",
+	NVL2(COMM, SAL*12+COMM, SAL*12) AS "연봉"
+	FROM EMP;
+	
+-- NULLIF : 두 값을 비교하여 동일하면 NULL, 동일하지 않으면 첫번째 값을 반환
+SELECT NULLIF (10, 10), NULLIF ('A', 'B')
+	FROM DUAL;
+	
+-- DECODE : 주어진 데이터 값이 조건 값과 일치하는 값을 출력하고 일치하는 값이 없으면 기본값 출력
+SELECT EMPNO, ENAME, JOB, SAL,
+	DECODE(JOB,
+	'MANAGER', SAL * 1.1,
+	'SALESMAN', SAL * 1.05,
+	'ANALYST', SAL,
+	SAL * 1.03)  AS "연봉인상"
+	FROM EMP;
+
+-- CASE : SQL의 표준 함수, 일반적으로 SELECT 절에서 많이 사용됨
+SELECT EMPNO, ENAME, JOB, SAL,
+	CASE JOB
+		WHEN 'MANAGE' THEN SAL * 1.1	
+		WHEN 'SALESMAN' THEN SAL * 1.05
+		WHEN 'ANALYST' THEN SAL
+		ELSE SAL * 1.03
+	END AS "연봉인상"
+	FROM EMP;
+
+-- 열 값에 따라서 출력이 달라지는 CASE 문 : 기준 데이터를 지정하지 않고 사용하는 방법
+SELECT EMPNO, ENAME, COMM,
+	CASE
+		WHEN COMM IS NULL THEN '해당 사항 없음'
+		WHEN COMM = 0 THEN '수당 없음'
+		WHEN COMM > 0 THEN '수당 : ' || COMM 
+	END AS "수당 정보"
+	FROM EMP;
+		
+	END
+	
