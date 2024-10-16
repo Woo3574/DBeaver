@@ -109,3 +109,99 @@ SELECT '[' || TRIM(' _ORACLE_ ') || ']' AS TRIM,
 	'[' || LTRIM(' _ORACLE_ ') || ']' AS LTRIM,
 	'[' || RTRIM(' _ORACLE_ ') || ']' AS RTRIM
 	FROM DUAL;
+	
+-- 날짜 데이터를 다루는 함수
+-- 날짜 데이터 + 숫자 : 가능, 날짜에서 일수 만큼의 이 후 날짜
+-- 날짜 데이터 - 숫자 : 가능, 날짜에서 숫자 만큼의 이 전 날짜
+-- 날짜 데이터 - 날짜 데이터 : 가능, 두 날짜간의 일수 차이
+-- 날짜 데이터 + 날짜 데이터 : 연산 불가
+-- SYSDATE : 운영체제로 부터 시간을 가져오는 함수
+SELECT SYSDATE FROM DUAL;
+
+SELECT SYSDATE AS "현재시간",
+ 	SYSDATE - 1 AS "어제",
+ 	SYSDATE + 1 AS "내일"
+ 	FROM DUAL;
+ 	
+-- 몇 개월 이후 날짜를 구하는 ADD_MONTH 함수 : 특정 날짜에 지정한 개월 수 이후 날짜 데이터를 반환
+ SELECT SYSDATE AS "현재 시간",
+ 	ADD_MONTHS(SYSDATE, 3) AS "3개월 이후 날짜데이터"
+ 	FROM DUAL;
+ 	
+-- 입사 10주년이 되는 사원들의 데이터 출력하기 (입사일로 부터 10년이 경과한 날짜 데이터 반환)
+SELECT EMPNO, ENAME, HIREDATE AS "입사일",
+	ADD_MONTHS(HIREDATE, 120) AS "10주년"
+	FROM EMP;
+
+-- 두 날짜간의 개월 수 차이를 구하는 MONTHS_BETWEEN
+SELECT EMPNO, ENAME, HIREDATE, SYSDATE,
+	MONTHS_BETWEEN(HIREDATE, SYSDATE) AS "-재직기간",
+	MONTHS_BETWEEN(SYSDATE, HIREDATE) AS "재직기간",
+	TRUNC(MONTHS_BETWEEN(SYSDATE , HIREDATE)) AS "재직 기간2" -- TRUNC 소수점 제거하기위해서
+	FROM EMP;
+	
+-- 돌아오는 요일(NEXT_DAY), 달의 마지막 날짜(LAST_DAY)
+SELECT SYSDATE,
+	NEXT_DAY(SYSDATE, '월요일'),
+	LAST_DAY(SYSDATE)
+	FROM DUAL;
+	
+SELECT LAST_DAY('24/8/28') FROM DUAL;
+
+-- 날짜 정보 추출 함수 : EXTRACT
+SELECT EXTRACT(YEAR FROM DATE '2024-10-16') FROM DUAL;
+
+SELECT * FROM EMP
+	WHERE EXTRACT(MONTH FROM HIREDATE) = 12;
+	
+-- 자료형을 변환하는 형 변환 함수
+SELECT EMPNO, ENAME, EMPNO + '500' -- 오라클의 기본 형변환 변경가능 숫자로 변환
+	FROM EMP
+	WHERE ENAME = 'FORD'; 
+	
+SELECT EMPNO, ENAME, '23445' + '500' 
+	FROM EMP
+	WHERE ENAME = 'FORD';
+	
+-- 날짜, 숫자를 문자로 변환하는 TO_CHAR 함수 : 자바의 SimpleDateFormat 유사
+SELECT SYSDATE AS "기본 시간형태", TO_CHAR(SYSDATE, 'YYYY/MM/DD HH24:MI:SS') AS "현재 날짜"
+	FROM DUAL;
+	
+SELECT SYSDATE,
+    TO_CHAR(SYSDATE, 'CC') AS 세기,
+    TO_CHAR(SYSDATE, 'YY') AS 연도,
+    TO_CHAR(SYSDATE, 'YYYY/MM/DD PM HH:MI:SS ') AS "년/월/일 시:분:초",
+    TO_CHAR(SYSDATE, 'Q') AS 쿼터,
+    TO_CHAR(SYSDATE, 'DD') AS 일,
+    TO_CHAR(SYSDATE, 'DDD') AS 경과일,
+    TO_CHAR(SYSDATE, 'HH') AS "12시간제",
+    TO_CHAR(SYSDATE, 'HH12') AS "12시간제",
+    TO_CHAR(SYSDATE, 'HH24') AS "24시간제",
+    TO_CHAR(SYSDATE, 'W') AS 몇주차
+FROM DUAL;
+
+SELECT SYSDATE,
+     TO_CHAR(SYSDATE, 'MM') AS MM,
+     TO_CHAR(SYSDATE, 'DD') AS DD,
+     TO_CHAR(SYSDATE, 'DY', 'NLS_DATE_LANGUAGE = KOREAN' ) AS DY_KOR,
+     TO_CHAR(SYSDATE, 'DY', 'NLS_DATE_LANGUAGE = JAPANESE') AS DY_JPN,
+     TO_CHAR(SYSDATE, 'DY', 'NLS_DATE_LANGUAGE = ENGLISH' ) AS DY_ENG,
+     TO_CHAR(SYSDATE, 'DAY', 'NLS_DATE_LANGUAGE = KOREAN' ) AS DAY_KOR,
+     TO_CHAR(SYSDATE, 'DAY', 'NLS_DATE_LANGUAGE = JAPANESE') AS DAY_JPN,
+     TO_CHAR(SYSDATE, 'DAY', 'NLS_DATE_LANGUAGE = ENGLISH' ) AS DAY_ENG
+FROM DUAL;
+
+-- 숫자 데이터 형식을 지정하여 출력
+SELECT SAL,
+	TO_CHAR(SAL, '$999,999') AS SAL_$, -- 9는 숫자의 한 자리를 의미 빈 자리를 채우지 않음
+	TO_CHAR(SAL, 'L999,999') AS SAL_L, -- 지역 화폐 단위 출력
+	TO_CHAR(SAL, '999,999.00') AS SAL_1, -- 0은 빈자리를 0으로 채움
+	TO_CHAR(SAL, '000,999,999.00') AS SAL_2
+	FROM EMP;
+	
+-- TO_NUMBER : 숫자 타입의 문자열을 숫자 데이터로 변환해주는 함수
+SELECT 1300 - '1500', '1300' + '1500'
+	FROM DUAL;
+
+-- TO_DATE : 문자열로 명시된 날짜로 변환하는 함수
+SELECT TO_DATE('') 
