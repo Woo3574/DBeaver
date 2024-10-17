@@ -112,7 +112,7 @@ FROM EMP
 SELECT NVL2(COMM, 'O', 'X') AS "추가수당",
 	COUNT(*) AS "사원수"
 FROM EMP
-	GROUP BY NVL2(COMM, 'O', 'X');
+GROUP BY NVL2(COMM, 'O', 'X');
 
 SELECT
 	CASE
@@ -122,12 +122,13 @@ SELECT
 	END AS "추가 수당",
 	COUNT(*) AS "사원수"
 FROM EMP
-	GROUP BY CASE
+GROUP BY
+	CASE
 		WHEN COMM IS NULL THEN 'X'
 		WHEN COMM = 0 THEN'X'
 		ELSE 'O'
 	END
-	ORDER BY "추가 수당";
+ORDER BY "추가 수당";
 
 
 -- 6.각 부서의 입사 연도별 사원 수, 최고 급여, 급여 합, 평균 급여를 출력 (집계함수빼고는 다 그룹으로 묶으면됨)
@@ -151,3 +152,37 @@ SELECT NVL(TO_CHAR(DEPTNO), '전체부서') AS "부서번호",
 FROM EMP
 GROUP BY ROLLUP(DEPTNO, JOB)
 ORDER BY "부서번호", "직책";
+
+-- 집합연산자 : UNION 두개 이상의 쿼리 결과를 하나로 결합하는 연산자(수직적 처리)
+-- 여러개의 SELECT문을 하나로 연결하는 기능
+-- 집합 연산자로 결합하는 결과의 컬럼은 데이터 타입이 동일해야 함 (열의 개수도 동일해야함)
+SELECT EMPNO, ENAME, SAL, DEPTNO
+FROM EMP
+WHERE DEPTNO = 10
+UNION
+SELECT EMPNO, ENAME, SAL, DEPTNO
+FROM EMP
+WHERE DEPTNO = 20
+UNION
+SELECT EMPNO, ENAME, SAL, DEPTNO
+FROM EMP
+WHERE DEPTNO = 30
+ORDER BY DEPTNO;
+
+-- 교집합 : INTERSECT
+-- 여러개의 SQL문의 결과에 대한 교집합을 반환
+SELECT EMPNO, ENAME, SAL
+FROM EMP
+	WHERE SAL > 1000 -- 1001 ~
+INTERSECT	-- 1001 ~ 1999
+SELECT EMPNO, ENAME, SAL
+FROM EMP
+	WHERE SAL < 2000; -- ~ 1999
+	
+-- 차집합 : MINUS, 중복행에 대한 결과를 하나의 결과를 보여줌
+SELECT EMPNO, ENAME, SAL
+FROM EMP
+MINUS
+SELECT EMPNO, ENAME, SAL
+FROM EMP
+	WHERE SAL > 2000;
