@@ -12,13 +12,13 @@ FROM EMP, DEPT
 ORDER BY EMPNO;
 
 -- 등가 조인 : 일치하는 열이 존재, INNER 조인이라고 함, 가장 일반적인 조인 방식
--- 오라클 조인
+-- 오라클 조인 오라클 뭔법 
 SELECT EMPNO, ENAME, JOB, SAL, E.DEPTNO
 FROM EMP E, DEPT D
 WHERE E.DEPTNO = D.DEPTNO
 ORDER BY EMPNO;
 
--- ANSI 조인 미국 표준 방식
+-- ANSI 조인 미국 표준 문법 방식
 SELECT EMPNO, ENAME, JOB, SAL, E.DEPTNO
 FROM EMP e JOIN DEPT d 
 ON E.DEPTNO = D.DEPTNO
@@ -51,3 +51,50 @@ FROM EMP e JOIN SALGRADE s
 ON SAL BETWEEN S.LOSAL AND S.HISAL; -- 급여와 LOSAL ~ HISAL 비등가 조인
 
 -- 자체 조인(SELF JOIN) : 자기 자신의 테이블과 조인 하는 것을 말함 (같은 테이블을 2번 사용)
+SELECT E1.EMPNO AS "사원번호", E1.ENAME AS "사원이름", -- MRG 직속상관에 대한 사원번호
+	E2.EMPNO AS "상관사원번호",
+	E2.ENAME AS "상관이름"
+FROM EMP e1 JOIN EMP e2
+ON e1.MGR = e2.EMPNO;
+
+-- 외부 조인 (OUTER JOIN) : LEFT, RIGHT, FULL : JOIN을 두고 어디기준에 둘지정하는 것
+SELECT e.ENAME, d.DEPTNO, d.DNAME
+FROM EMP e FULL OUTER JOIN DEPT d
+ON e.DEPTNO = d.DEPTNO
+ORDER BY e.DEPTNO;
+
+SELECT * FROM DEPT;
+
+-- NATURAL JOIN : 등가 조인과 비슷하지만 WHERE 조건절 없이 사용
+-- 두 테이블의 동일한 이름이 있는 열을 자동으로 찾아서 조인 해줌
+SELECT EMPNO, ENAME, DEPTNO, DNAME
+FROM EMP e NATURAL JOIN DEPT d;
+
+-- JOIN ~ USING : 등가 조인을 대신하는 조인 방식
+SELECT e.EMPNO, e.ENAME, e.JOB, DEPTNO, d.DNAME, d.LOC
+FROM EMP e JOIN DEPT d USING(DEPTNO)
+ORDER BY e.EMPNO;
+
+-- Q1.급여가 2000원 초과인 사원들의 정보 출력(부서번호, 부서이름, 사원번호, 사원이름, 급여)
+-- JOIN ~ ON, NATURAL JOIN, JOIN ~ USING 아무거나 사용
+SELECT DEPTNO, d.dNAME, e.EMPNO, e.ENAME, e.SAL
+FROM EMP e NATURAL JOIN DEPT d
+	WHERE e.SAL > 2000;
+
+-- Q2.각 부서별 평균 급여, 최대 급여, 최소 급여, 사원수 출력
+-- 출력 내용은 (부서번호, 부서이름, 평균 급여, 최대 급여, 최소 급여, 사원수)
+SELECT d.DEPTNO AS "부서번호",
+	d.DNAME AS "부서이름",
+	ROUND(AVG(SAL)) AS "평균 급여",
+	MAX(SAL) AS "최대 급여",
+	MIN(SAL) AS "최소 급여",
+	COUNT(*) AS "사원수"
+FROM EMP e JOIN DEPT d
+ON e.DEPTNO = d.DEPTNO
+GROUP BY d.DEPTNO, d.DNAME;
+
+-- Q3.모든 부서 정보와 사원 정보 출력 (부서 번호와 부서 이름순으로 정렬), 모든 부서가 나와야함
+SELECT *
+FROM EMP e RIGHT OUTER JOIN DEPT d
+ON e.DEPTNO = d.DEPTNO
+ORDER BY d.DEPTNO, d.DNAME;
