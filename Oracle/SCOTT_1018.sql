@@ -112,11 +112,77 @@ FROM EMP
 			WHERE DEPTNO = 30
 		);
 
+-- ALL 연산자 사용해서 동일 결과 만들기
 SELECT EMPNO, ENAME, SAL
 FROM EMP
 	WHERE SAL < ALL(
-		SELECT MIN(SAL)
+		SELECT SAL
 		FROM EMP
 			WHERE DEPTNO = 30
 		);
 	
+-- 직책이 'MANAGER'인 사원 보다 많은 급여 받는 사원의 사원번호, 이름, 급여, 부서이름 출력
+SELECT e.EMPNO, e.ENAME, e.SAL, d.DNAME
+FROM EMP e JOIN DEPT d
+ON e.DEPTNO = d.DEPTNO
+	WHERE e.SAL > ALL(
+		SELECT SAL
+		FROM EMP
+			WHERE JOB = 'MANAGER'
+		);
+		
+-- EXISTS : 서브쿼리의 결과 값이 하나이상 존재하면 TRUE
+SELECT *
+FROM EMP
+	WHERE EXISTS (
+		SELECT DNAME
+		FROM DEPT
+			WHERE DEPTNO = 40
+		);
+		
+-- 다중열 서브 쿼리 : 서브 쿼리의 결과가 두 개 이상의 컬럼으로 반환되어 메인 쿼리에 전달하는 쿼리
+SELECT EMPNO, ENAME, SAL, DEPTNO
+FROM EMP
+	WHERE (DEPTNO, SAL) IN (
+		SELECT DEPTNO,SAL
+		FROM EMP
+			WHERE DEPTNO = 30
+		);
+
+-- 각 부서별 최고 급여 받는 사원의 정보 출력
+SELECT *
+FROM EMP
+	WHERE (DEPTNO, SAL) IN (
+		SELECT DEPTNO, MAX(SAL)
+		FROM EMP
+		GROUP BY DEPTNO
+	);
+
+-- FROM 절에 사용하는 서브 쿼리 : 인라인뷰라고 하기도 함
+-- 테이블 내 데이터 규모가 너무 크거나 현재 작업에
+-- 불필요한 열이 너무 많아 일부 행과 열만 사용하고자 할 때 유용
+SELECT e10.EMPNO, e10.ENAME, e10.DEPTNO, d.DNAME, d.LOC
+FROM (
+	SELECT *
+	FROM EMP
+	WHERE DEPTNO = 10) e10
+JOIN DEPT d
+ON e10.DEPTNO = d.DEPTNO;
+			
+SELECT e10.EMPNO, e10.ENAME, e10.DEPTNO, d.DNAME, d.LOC
+FROM (
+	SELECT ENAME, EMPNO, DEPTNO
+	FROM EMP
+	WHERE DEPTNO = 10) e10
+JOIN DEPT d
+ON e10.DEPTNO = d.DEPTNO;
+
+-- 먼저 정렬하고 해당 갯수만 가져 오기 : 급여가 많은 5명에 대한 정보 보여줘
+SELECT ROWNUM, ENAME, SAL
+FROM (
+	SELECT *
+	FROM EMP
+	ORDER BY SAL DESC
+)
+	WHERE ROWNUM <= 5;
+			
