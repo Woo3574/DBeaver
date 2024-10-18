@@ -158,7 +158,7 @@ FROM EMP
 		GROUP BY DEPTNO
 	);
 
--- FROM 절에 사용하는 서브 쿼리 : 인라인뷰라고 하기도 함
+-- FROM 절에 사용하는 서브 쿼리 : *인라인뷰 라고 하기도 함
 -- 테이블 내 데이터 규모가 너무 크거나 현재 작업에
 -- 불필요한 열이 너무 많아 일부 행과 열만 사용하고자 할 때 유용
 SELECT e10.EMPNO, e10.ENAME, e10.DEPTNO, d.DNAME, d.LOC
@@ -186,3 +186,63 @@ FROM (
 )
 	WHERE ROWNUM <= 5;
 			
+-- SELECT 절에 사용하는 서브쿼리 : 단일행 서브쿼리를 *스칼라 서브쿼리 라고 함
+-- SELECT 절에 명시하는 서브쿼리는 반드시 하나의 결과만 반한하도록 작성해야 함
+SELECT EMPNO, ENAME, JOB, SAL,
+	(
+		SELECT GRADE
+		FROM SALGRADE
+			WHERE e.SAL BETWEEN LOSAL AND HISAL
+	) AS "급여 등급",
+    DEPTNO AS "부서 번호",
+    (
+    	SELECT DNAME
+    	FROM DEPT d
+    		WHERE e.DEPTNO = d.DEPTNO
+    ) AS "부서 이름"
+FROM EMP e
+ORDER BY "급여 등급";
+
+-- 조인으로 바꾸기
+SELECT e.EMPNO, e.ENAME, e.JOB, e.SAL, s.GRADE AS "급여 등급", d.DEPTNO, d.DNAME
+FROM EMP e -- EMP 기준으로 SALGRAE 조인, DEPT 조인, EMP기준으로 각각 조인
+JOIN SALGRADE s
+ON e.SAL BETWEEN s.LOSAL AND s.HISAL -- 비등가 조인일 경우 조건문이 와야함 
+JOIN DEPT d
+ON e.DEPTNO = d.DEPTNO -- 등가 조인일 경우 같은 공통 컬럼사용
+ORDER BY "급여 등급";
+
+-- 부서 위치가 NEW YORK인 경우에는 본사, 그 외는 분점으로 반환하도록 만들기
+SELECT EMPNO, ENAME,
+	CASE 
+		WHEN DEPTNO = (
+			SELECT DEPTNO
+			FROM DEPT
+				WHERE LOC = 'NEW YORK') THEN '본사'
+			ELSE '분점'
+	END AS "소속" 
+FROM EMP
+ORDER BY "소속";
+
+-- 연습 문제 1번 
+-- 전체 사원 중 ALELEN과 같은 직챙(JOB)인 사원들의 사원 정보, 부서 정보를
+-- 다음과 같이 출력하는 SQL문을 작성하세요. (직책, 사원번호, 사원이름, 급여, 부서번호, 부서 이름)
+
+-- 연습 문제 2번
+-- 전체 사원의 평균 급여(SAL)보다 높은 급여를 받는 사람들의 사원정보, 부서 정보,
+-- 급여 등급 정보를 출력하는 SQL문을 작성하세요.
+-- (단 출력할 때 급여가 많은 순으로 정렬하되 급여가 같을 경우에는)
+-- 사원 번호를 기준으로 오름차순으로 정렬하세요).
+-- (사원번호, 이름, 입사일, 급여, 급여 등급, 부서이름, 부서위치)
+
+-- 연습 문제 3번
+-- 10번 부서에 근무하는 사원 중 30번 부서에는 존재하지 않는 직책을 가진 사원들의 사원 정보,
+-- 부서 정보를 다음과 같이 출력하는 SQL문을 작성하세요.
+-- (사원번호, 사원이름, 직책, 부서번호, 부서이름, 부서위치)
+
+-- 연습 문제 4번
+-- 책이 SALESMAN인 사람들의 최고 급여보다 높은 급여를 받는 사원들의 사원 정보,
+-- 급여 등급 정보를 다음과 같이 출력하는 SQL문을 작성하세요.
+-- (단, 서브쿼리를 활용할 때 다중행 함수를 사용하는 방법과
+-- 사용하지 않는 방법을 통해 사원 번호를 기준으로 오름차순으로 정렬하세요.)
+-- (사원번호, 사원이름, 급여, 급여 등급)
