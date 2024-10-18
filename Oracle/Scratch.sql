@@ -122,6 +122,7 @@ SELECT EMPNO, ENAME, HIREDATE,
 	TO_CHAR(NEXT_DAY(ADD_MONTHS(HIREDATE, 3), '월요일'),'YYYY-MM-DD') AS "R_JOB",
 	NVL(TO_CHAR(COMM), 'N/A') AS "COMM"
 	FROM EMP;
+-----------------------------------------------------------------
 --2024.10.17	
 SELECT SUM(DISTINCT SAL), SUM(SAL) FROM EMP;
 --
@@ -170,10 +171,82 @@ FROM EMP e
 	SELECT MAX(SAL)
 	FROM EMP e2
 		WHERE e2.DEPTNO = e.DEPTNO);
+
+
+-----------------------------------------------------------------
+--2024.10.18
+-- 서브 쿼리 : 데이터를 필터링하거나 집계에 사용
+-- 지정한 사원의 소속된 부서의 이름을 가져오기 특정사원 이름:JAMES
+SELECT DNAME
+FROM DEPT d 
+	WHERE DEPTNO = (
+		SELECT DEPTNO
+		FROM EMP
+			WHERE ENAME = 'JAMES'
+	);
 	
+-- 서브쿼리로 'JONES'의 급여보다 높은 급여를 받는 사원 정보 출력
+SELECT *
+FROM EMP
+	WHERE SAL > (
+		SELECT SAL 
+		FROM EMP
+			WHERE ENAME ='JONES'
+	);
+-- 문제 : EMP 테이블의 사원 정보 중에서 사원이름이 ALLEN인 사원의 추가 수당 보다 많은 사원 정보 출력
+SELECT *
+FROM EMP
+ 	WHERE COMM > (
+ 		SELECT COMM
+ 		FROM EMP
+ 			WHERE ENAME = 'ALLEN'
+ 	);
+-- 문제 : JAMES 보다 먼저 입사한 사원들의 정보 출력
+ SELECT *
+ FROM EMP
+ 	WHERE HIREDATE < (
+ 		SELECT HIREDATE
+ 		FROM EMP
+ 			WHERE ENAME = 'JAMES'
+ 	);
+-- 문제 : 20번 부서에 속한 사원 중 전체 사원의 평균 급여 보다 높은 급여를 받는 사원 정보와 소속부서 조회	
+SELECT e.EMPNO, e.ENAME, SAL, d.DEPTNO, d.DNAME, d.LOC
+FROM EMP e JOIN DEPT d
+ON e.DEPTNO = d.DEPTNO
+	WHERE  d.DEPTNO = 20
+	AND SAL > (
+		SELECT AVG(SAL)
+		FROM EMP
+		);
+--직원의 급여(SAL)가 부서 내 평균 급여보다 높은 직원이 있는 부서의 이름을 조회하세요.
+--중복된 부서 이름은 제외하고, 결과는 부서 이름을 알파벳 순으로 정렬하세요.	
+SELECT DISTINCT d.DNAME AS "부서이름"
+FROM EMP e JOIN DEPT d
+ON e.DEPTNO = d.DEPTNO
+WHERE e.SAL > (
+    SELECT AVG(e2.SAL)
+    FROM EMP e2
+    WHERE e.DEPTNO = e2.DEPTNO
+)
+ORDER BY "부서이름";
+	
+SELECT * FROM DEPT;
 -- 연습 문제 1번 
--- 전체 사원 중 ALELEN과 같은 직챙(JOB)인 사원들의 사원 정보, 부서 정보를
+-- 전체 사원 중 ALLEN과 같은 직책(JOB)인 사원들의 사원 정보, 부서 정보를
 -- 다음과 같이 출력하는 SQL문을 작성하세요. (직책, 사원번호, 사원이름, 급여, 부서번호, 부서 이름)
+SELECT e.JOB AS "직책",
+	e.EMPNO AS "사원번호",
+	e.ENAME AS "사원이름",
+	e.SAL AS "급여",
+	d.DEPTNO AS "부서번호",
+	d.DNAME AS "부서이름"
+FROM EMP e JOIN DEPT d
+ON e.DEPTNO = d.DEPTNO
+	WHERE e.JOB = (
+	SELECT e2.JOB
+	FROM EMP e2
+		WHERE e2.ENAME = 'ALLEN'
+	);
 
 -- 연습 문제 2번
 -- 전체 사원의 평균 급여(SAL)보다 높은 급여를 받는 사람들의 사원정보, 부서 정보,
@@ -182,19 +255,63 @@ FROM EMP e
 -- 사원 번호를 기준으로 오름차순으로 정렬하세요).
 -- (사원번호, 이름, 입사일, 급여, 급여 등급, 부서이름, 부서위치)
 
+SELECT e.EMPNO AS "사원번호",
+	e.ENAME AS "사원이름",
+	e.HIREDATE AS "입사일",
+	e.SAL AS "급여",
+	s.GRADE AS "급여등급",
+	d.DEPTNO AS "부서",
+	d.DNAME AS "부서이름",
+	d.LOC
+FROM EMP e
+JOIN DEPT d
+ON e.DEPTNO = d.DEPTNO
+JOIN SALGRADE s
+ON e.SAL BETWEEN s.LOSAL AND s.HISAL
+	WHERE e.SAL > (
+		SELECT AVG(SAL)
+		FROM EMP
+		)
+ORDER BY "급여" DESC,"사원번호";
+
 -- 연습 문제 3번
 -- 10번 부서에 근무하는 사원 중 30번 부서에는 존재하지 않는 직책을 가진 사원들의 사원 정보,
 -- 부서 정보를 다음과 같이 출력하는 SQL문을 작성하세요.
 -- (사원번호, 사원이름, 직책, 부서번호, 부서이름, 부서위치)
+SELECT e.EMPNO AS "사원번호",
+	e.ENAME AS "사원이름",
+	e.JOB AS "직책",
+	d.DEPTNO AS "부서번호",
+	d.DNAME AS "부서이름",
+	d.LOC AS "부서위치"
+FROM EMP e JOIN DEPT d
+ON e.DEPTNO = d.DEPTNO
+	WHERE e.DEPTNO = 10
+		AND e.JOB NOT IN (
+		SELECT e2.JOB
+		FROM EMP e2 
+			WHERE e2.DEPTNO = 30
+		);
 
 -- 연습 문제 4번
--- 책이 SALESMAN인 사람들의 최고 급여보다 높은 급여를 받는 사원들의 사원 정보,
+-- 직책이 SALESMAN인 사람들의 최고 급여보다 높은 급여를 받는 사원들의 사원 정보,
 -- 급여 등급 정보를 다음과 같이 출력하는 SQL문을 작성하세요.
 -- (단, 서브쿼리를 활용할 때 다중행 함수를 사용하는 방법과
 -- 사용하지 않는 방법을 통해 사원 번호를 기준으로 오름차순으로 정렬하세요.)
 -- (사원번호, 사원이름, 급여, 급여 등급)
 
-
+SELECT e.EMPNO AS "사원번호",
+	e.ENAME AS "사원이름",
+	e.SAL AS "급여",
+	s.GRADE AS "급여 등급"
+FROM EMP e JOIN SALGRADE s
+ON e.SAL BETWEEN s.LOSAL AND s.HISAL
+	WHERE SAL > (
+	SELECT MAX(SAL)
+	FROM EMP
+		WHERE JOB = 'SALESMAN'
+	)
+ORDER BY "사원번호";
 
 
 

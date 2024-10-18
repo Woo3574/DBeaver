@@ -13,7 +13,7 @@ FROM DEPT
 		FROM EMP
 			WHERE ENAME = 'KING'
 		);
--- 서브쿼리로 'JONES'의 급여보다 높은 급여를 받는 사원 정보 출력
+	
 -- 등가 조인을 사용해서 구현
 SELECT DNAME
 FROM EMP e JOIN DEPT d
