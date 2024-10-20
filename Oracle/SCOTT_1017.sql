@@ -14,7 +14,7 @@ SELECT SUM(DISTINCT SAL), SUM(SAL) FROM EMP; -- 중복된값을 제거 DISTINCT
 SELECT SUM(SAL), SUM(COMM) FROM EMP;
 
 -- 20번 부서의 모든 사원에 대해서 급여와 추가 수당의 합을 구하기
-SELECT DEPTNO AS "20번 부서", SUM(SAL) AS "총 급여",
+SELECT DEPTNO AS "20번 부서", SUM(SAL) AS "총 급여",ffs
 	SUM(COALESCE(COMM,0)) AS "총 추가 수당"
 FROM EMP		
 GROUP BY DEPTNO
