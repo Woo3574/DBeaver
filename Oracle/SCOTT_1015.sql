@@ -138,7 +138,7 @@ SELECT EMPNO, ENAME FROM EMP
 SELECT * FROM EMP
 	WHERE ENAME LIKE '_L%';
 	
--- [실습] 첫번째 사원 이름에 AM이 포함되어있는 사원 데이터만 출력
+-- [실습]  사원 이름에 AM이 포함되어있는 사원 데이터만 출력
 SELECT * FROM EMP
 	WHERE ENAME LIKE '%AM%';
 
@@ -148,7 +148,7 @@ SELECT * FROM EMP
 	
 -- 와일드 카드 문자가 데이터 일부일 경우 : (%, _) escape로 지정된 '\'뒤에 오는 %와일드카드가 아니라는 의미
 SELECT * FROM EMP
-	WHERE ENAME LIKE '%\%S' ESCAPE '\'; -- 사원 이름이 %P로 끝나느 사원을 조회
+	WHERE ENAME LIKE '%\%P' ESCAPE '\'; -- 사원 이름이 %P로 끝나는 사원을 조회
 	
 INSERT INTO EMP(EMPNO, ENAME, JOB, MGR, HIREDATE, SAL, COMM, DEPTNO)
 	VALUES(1001, 'JAME%S', 'MANAGER', 7839, '2024.10.15', 3500, 450, 30);
@@ -279,10 +279,22 @@ SELECT SYSDATE FROM DUAL; -- DUAL : DUMMY TABLE
 SELECT 23 + 30 FROM DUAL;
 
 -- 10. EMP 테이블에서 사번, 사원명, 급여 조회  (단, 급여는 100단위까지의 값만 출력 처리하고 급여 기준 내림차순 정렬)
-SELECT EMPNO, ENAME, SAL FROM EMP;
+SELECT EMPNO AS "사원번호", 
+	ENAME AS "사원명",
+	TRUNC(SAL,-2) AS "급여"
+FROM EMP	
+ORDER BY 급여 DESC;
 
 -- 11. EMP 테이블에서 사원번호가 홀수인 사원들을 조회
+SELECT *
+FROM EMP
+	WHERE MOD(EMPNO,2) = 1;
+
 -- 12. EMP 테이블에서 사원명, 입사일 조회
+SELECT EMPNO AS "사원명",
+	HIREDATE AS "입사일"
+FROM EMP;
+
 -- 13. EMP 테이블에서 9월에 입사한 직원의 정보 조회
 SELECT * FROM EMP
 	WHERE EXTRACT (MONTH FROM HIREDATE) = 9;
@@ -292,10 +304,21 @@ SELECT * FROM EMP
 	WHERE EXTRACT (YEAR FROM HIREDATE) = 1981;
 
 -- 15. EMP 테이블에서 이름이 'E'로 끝나는 직원 조회
+SELECT *
+FROM EMP
+	WHERE ENAME LIKE '%E';
 -- 16. EMP 테이블에서 이름의 세 번째 글자가 'R'인 직원의 정보 조회
+SELECT *
+FROM EMP
+	WHERE ENAME LIKE '__R%';
 -- 17. EMP 테이블에서 사번, 사원명, 입사일, 입사일로부터 40년 되는 날짜 조회
 SELECT EMPNO, ENAME, HIREDATE, ADD_MONTHS(HIREDATE, 12*40) -- 특정 날짜에 개월수를 더해 날짜 계산
 FROM EMP; 
 
 -- 18. EMP 테이블에서 입사일로부터 38년 이상 근무한 직원의 정보 조회
+SELECT *
+FROM EMP
+	WHERE HIREDATE <= ADD_MONTHS(SYSDATE,-12 * 38);
 -- 19. 오늘 날짜에서 년도만 추출
+SELECT EXTRACT (YEAR FROM SYSDATE)
+FROM DUAL;
