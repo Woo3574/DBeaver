@@ -40,3 +40,57 @@ ALTER TABLE EMP_ALTER
 	RENAME COLUMN HP TO TEL;
 	
 -- 자료형을 변경하는 MODIFY
+-- 저료형 변경 시 데이터가 이미 존재하는 경우 크기를 크게 하는 경우느 문제가 되지 않으나
+-- 크기를 줄이는 경우 저장되어 있는 데이터 크기에 따라 변경되지않을 수 있음
+ALTER TABLE EMP_ALTER
+	MODIFY EMPNO NUMBER(5);
+	
+-- 특정 열을 삭제하는 DROP
+ALTER TABLE EMP_ALTER
+	DROP COLUMN TEL;
+	
+SELECT * FROM EMP_ALTER;
+
+-- 테이블 이름을 변경하는 RENAME
+RENAME EMP_ALTER TO EMP_RENAME;
+
+SELECT * FROM EMP_RENAME;
+
+-- 테이블의 데이터를 삭제하는 TRUNCATE : 테이블의 모든 데이터 삭제, 테이블 구조에 영향을 주지 않음
+-- DDL 명령어 이기 때문에 ROLLBACK 불가
+DELETE FROM EMP_RENAME; -- DELETE는 DML이기 때문에 ROLLBACK 가능
+ROLLBACK;
+TRUNCATE TABLE EMP_RENAME;
+
+-- 테이블을 삭제하는 DROP
+DROP TABLE EMP_RENAME;
+
+-- 제약 조건 : 데이터의 무결성(정확하고 일관된 값)을 보장하기 위해 테이블에 설저되는 규칙
+-- NOT NULL : 지정한 열에 값이 있어야 함
+-- UNIQUE : 값이 유일해야 함, 단 NULL 허용
+-- PRIMARY KEY(PK) : 유일해야하고 NULL이면 안됨
+-- FOREIGN KEY(FK) : 다른 테이블의 열을 참조하여 존재하는 값만 입력 할 수 있음
+-- CHECK : 설정한 조건식을 만족하는데이터만 입력 가능
+CREATE TABLE TABLE_NOTNULL (
+	LOGIN_ID VARCHAR2(20) NOT NULL,
+	LOGIN_PWD VARCHAR2(20) NOT NULL,
+	TEL VARCHAR2(20)
+);
+
+SELECT * FROM TABLE_NOTNULL;
+
+INSERT INTO TABLE_NOTNULL(LOGIN_ID, LOGIN_PWD, TEL)
+	VALUES ('곰돌이사육사', 'SPHB8250', '010-5006-4146');
+
+UPDATE TABLE_NOTNULL
+	SET LOGIN_PWD = 'TEST13245678'
+	WHERE LOGIN_ID = '곰돌이사육사';
+	
+UPDATE TABLE_NOTNULL
+	SET TEL = '12345678'
+	WHERE LOGIN_ID = '곰돌이 사육사';
+
+-- 이미 만들어진 테이블에 제약 조건 지정하기
+ALTER TABLE TABLE_NOTNULL
+	MODIFY TEL NOT NULL;
+	
