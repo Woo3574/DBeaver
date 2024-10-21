@@ -181,3 +181,33 @@ INSERT INTO TABEL_DEFAULT VALUES('레이', NULL, '12345678');
 INSERT INTO TABEL_DEFAULT(LOGIN_ID, TEL) VALUES('이서', '123456789');
 
 SELECT * FROM TABEL_DEFAULT;
+
+-- 데이터 사전 : 데이터베이스를 구성하고, 운영하는데 필요한 모든 정보를 저장하는 특수한 테이블을 의미함
+-- 데이터 사전에는 데이터베이스 메모리, 성능, 사용자, 권한, 객체 등등의 정보가 포함 됨
+SELECT * FROM dictionary;
+
+SELECT * FROM USER_INDEXES;
+
+-- 인덱스 생성 : 오라클에서는 자동으로 생성해주는 인덱스 (PK)외의 사용자가 직접 인덱스를 만들때는 CREATE문을 사용
+CREATE INDEX IDX_EMP_SAL ON EMP(SAL);
+
+-- 인덱스 삭제
+DROP INDEX IDX_EMP_SAL;
+
+-- 테이블뷰
+-- 뷰란? 가상테이블로 부르는 뷰(VIEW)는 하나 이상의 테이블을 조회하는 SELECT문을 저장한 객체를 의미
+-- SELECT * FROM VW_EMP20;
+SELECT *
+FROM ( -- 큰테이블에서 잘라서 가져온거
+	SELECT EMPNO, ENAME, JOB, DEPTNO
+	FROM EMP
+		WHERE DEPTNO = 20
+);
+
+CREATE VIEW VW_EMP20 -- 영구적으로 작은테이블하나를 만든것
+AS (SELECT EMPNO, ENAME, JOB, DEPTNO
+	FROM EMP
+	WHERE DEPTNO = 20
+);
+
+SELECT * FROM VW_EMP20;
