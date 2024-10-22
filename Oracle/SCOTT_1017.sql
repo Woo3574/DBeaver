@@ -14,7 +14,7 @@ SELECT SUM(DISTINCT SAL), SUM(SAL) FROM EMP; -- 중복된값을 제거 DISTINCT
 SELECT SUM(SAL), SUM(COMM) FROM EMP;
 
 -- 20번 부서의 모든 사원에 대해서 급여와 추가 수당의 합을 구하기
-SELECT DEPTNO AS "20번 부서", SUM(SAL) AS "총 급여"
+SELECT DEPTNO AS "20번 부서", SUM(SAL) AS "총 급여",
 	SUM(COALESCE(COMM,0)) AS "총 추가 수당"
 FROM EMP		
 GROUP BY DEPTNO
@@ -58,7 +58,7 @@ SELECT EMPNO, ENAME, JOB, DEPTNO, SAL FROM EMP e
 		SELECT MAX(SAL) FROM EMP e2
 			WHERE e2.JOB = e.JOB);
 		
--- HACING 절 : 그룹화된 대상에 대한 출력 제한
+-- HAVING 절 : 그룹화된 대상에 대한 출력 제한
 -- GROUP BY 존재할 때만 사용 할수있음
 -- WHERE 조건절과 동일하게 동작하지만, 그룹화된 결과 값의 범위를 제한 할 때 사용
 SELECT DEPTNO, JOB, AVG(SAL)
