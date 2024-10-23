@@ -41,9 +41,10 @@ CREATE TABLE ORDER_RECORD(
 
 --DROP TABLE INV;
 
-// SQL DB, STORE 테이블에 테스트를 위해 넣은 값.
+--SQL DB, STORE 테이블에 테스트를 위해 넣은 값.
 INSERT INTO STORE (store_id, sales, capital)
 	VALUES ('역삼점', 3000000, 4000000);
 
-//들어갔는지 체크용
-SELECT * FROM store;
+--들어갔는지 체크용
+SELECT * FROM STORE;
+SELECT * FROM INV;
