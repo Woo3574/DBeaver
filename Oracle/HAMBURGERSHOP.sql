@@ -55,6 +55,9 @@ SELECT * FROM STORE;
 SELECT * FROM ACC_INFO;
 DELETE FROM STORE	
 	WHERE store_id = '역삼점';
+DELETE FROM ACC_INFO
+ 	WHERE user_name = 'QQQ';
+	
 
 INSERT ALL
 	INTO ACC_INFO (USER_ID,	USER_PW, USER_NAME, USER_PHONE, JOIN_DATE, AUTH_LV, STORE_ID)
@@ -132,3 +135,45 @@ FROM STORE
 UPDATE STORE 
 SET capital = capital + 3000 
 WHERE store_id = (SELECT store_id FROM ACC_INFO WHERE user_id = 'RED');
+
+-- INV테이블에서 참조 제약이 뭔지 찾아보기
+SELECT constraint_name
+FROM user_constraints
+WHERE table_name = 'INV'
+AND constraint_type = 'R';
+
+-- 제약 이름이 시스템에서 생성되서 뭐가 뭔지 모를 때 쓰는 쿼리
+SELECT 
+    uc.constraint_name, 
+    uc.constraint_type, 
+    ucc.table_name, 
+    ucc.column_name, 
+    uc.r_constraint_name AS referenced_constraint, 
+    ur.table_name AS referenced_table
+FROM 
+    user_constraints uc
+JOIN 
+    user_cons_columns ucc ON uc.constraint_name = ucc.constraint_name
+LEFT JOIN 
+    user_constraints ur ON uc.r_constraint_name = ur.constraint_name
+WHERE 
+    uc.constraint_name = 'SYS_C007130';
+    
+-- inv 테이블에서 제약 떨구기
+ALTER TABLE INV 
+	DROP CONSTRAINT SYS_C007130;
+	
+-- CASCADE DELETE 처리 (INV)
+ALTER TABLE INV 
+ADD CONSTRAINT menu_delete
+FOREIGN KEY (menu_name)
+REFERENCES INV_ORDER(menu_name)
+ON DELETE CASCADE;
+
+-- INV_ORDER 테이블 varchar40으로 변경
+ALTER TABLE INV_ORDER
+MODIFY (menu_name VARCHAR2(40));
+
+-- INV 테이블 varchar40 으로 변경
+ALTER TABLE INV 
+MODIFY (menu_name VARCHAR2(40));
