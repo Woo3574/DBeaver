@@ -13,21 +13,27 @@ DROP TABLE MEMBER;
 
 CREATE TABLE STORE(
 	STORE_NO NUMBER(20) PRIMARY KEY, -- 매장번호
-	BRAND_NAME VARCHAR2(20) UNIQUE NOT NULL, -- 브랜드명
-	STORE_NAME VARCHAR2(20) UNIQUE NOT NULL, -- 지점명
+	BRAND_NAME VARCHAR2(20) NOT NULL, -- 브랜드명
+	BRAND_LOGO VARCHAR2(500) NOT NULL, -- 브랜드 Logo 이미지 URL
+	STORE_NAME VARCHAR2(20) NOT NULL, -- 지점명
+	STORE_IMG VARCHAR2(500) NOT NULL, -- 지점 이미지 URL
 	STORE_HOUR VARCHAR2(20)	NOT NULL, -- 매장 시간
 	STORE_ADDR VARCHAR2(100) UNIQUE NOT NULL, -- 매장 주소
 	STORE_MAP VARCHAR2(50), -- 매장 위치(위도, 경도)
-	STORE_PHONE VARCHAR2(15) UNIQUE NOT NULL -- 매장 연락처
+	STORE_PHONE VARCHAR2(15) UNIQUE NOT NULL, -- 매장 연락처
+	 CONSTRAINT STORE_BRAND_UNIQUE UNIQUE (BRAND_NAME, STORE_NAME) -- 브랜드명과 지점명 조합으로 유니크 설정
 );
 
-INSERT INTO STORE (STORE_NO, BRAND_NAME, STORE_NAME, STORE_HOUR, STORE_ADDR, STORE_MAP, STORE_PHONE) VALUES(50, '오빠닭', '역삼점', '08:00~20:00', '서울시 역삼동','19999999,3555555', '02-1234-5678');
-INSERT INTO STORE (STORE_NO, BRAND_NAME, STORE_NAME, STORE_HOUR, STORE_ADDR, STORE_MAP, STORE_PHONE) VALUES(51, '오빠닭', '삼성점', '08:00~20:00', '서울시 삼성동','19999998,3555545', '02-1234-5679');
- INSERT INTO STORE (STORE_NO, BRAND_NAME, STORE_NAME, STORE_HOUR, STORE_ADDR, STORE_MAP, STORE_PHONE) VALUES(52, '오빠닭', '두정점', '09:00~20:00', '서울시 두정동','19999997,3555545', '02-1234-5689');
+INSERT INTO STORE (STORE_NO, BRAND_NAME, BRAND_LOGO, STORE_NAME, STORE_IMG, STORE_HOUR, STORE_ADDR, STORE_MAP, STORE_PHONE) VALUES(50, '빽보이피자', 'https://firebasestorage.googleapis.com/v0/b/kh-basic-frontend-react-f5a7b.firebasestorage.app/o/PAIKBOOKER%2F01빽보이피자02.png?alt=media&token=0ea99080-4d4e-42ae-8f6f-db36c4db3564', '역삼점', 'https://firebasestorage.googleapis.com/v0/b/kh-basic-frontend-react-f5a7b.firebasestorage.app/o/PAIKBOOKER%2F01빽보이피자02.png?alt=media&token=0ea99080-4d4e-42ae-8f6f-db36c4db3564', '08:00~20:00', '서울시 역삼동','19999999,3555555', '02-1234-5678');
+INSERT INTO STORE (STORE_NO, BRAND_NAME, BRAND_LOGO, STORE_NAME, STORE_IMG, STORE_HOUR, STORE_ADDR, STORE_MAP, STORE_PHONE) VALUES(60, '빽보이피자', 'https://firebasestorage.googleapis.com/v0/b/kh-basic-frontend-react-f5a7b.firebasestorage.app/o/PAIKBOOKER%2F01빽보이피자02.png?alt=media&token=0ea99080-4d4e-42ae-8f6f-db36c4db3564', '삼성점', 'https://firebasestorage.googleapis.com/v0/b/kh-basic-frontend-react-f5a7b.firebasestorage.app/o/PAIKBOOKER%2F01빽보이피자02.png?alt=media&token=0ea99080-4d4e-42ae-8f6f-db36c4db3564', '08:00~20:00', '서울시 삼성동 19','19999994,3555554', '02-1234-5676');
+INSERT INTO STORE (STORE_NO, BRAND_NAME, BRAND_LOGO, STORE_NAME, STORE_IMG, STORE_HOUR, STORE_ADDR, STORE_MAP, STORE_PHONE) VALUES(51, '역전우동', 'https://firebasestorage.googleapis.com/v0/b/kh-basic-frontend-react-f5a7b.firebasestorage.app/o/PAIKBOOKER%2F02역전우동02.png?alt=media&token=ec82d374-fd66-46af-9a30-b768114bafd7', '삼성점', 'https://firebasestorage.googleapis.com/v0/b/kh-basic-frontend-react-f5a7b.firebasestorage.app/o/PAIKBOOKER%2F02역전우동02.png?alt=media&token=ec82d374-fd66-46af-9a30-b768114bafd7', '08:00~20:00', '서울시 삼성동','19999998,3555545', '02-1234-5679');
+INSERT INTO STORE (STORE_NO, BRAND_NAME, BRAND_LOGO, STORE_NAME, STORE_IMG, STORE_HOUR, STORE_ADDR, STORE_MAP, STORE_PHONE) VALUES(52, '빽다방', 'https://firebasestorage.googleapis.com/v0/b/kh-basic-frontend-react-f5a7b.firebasestorage.app/o/PAIKBOOKER%2F03빽다방02.png?alt=media&token=244dcfc0-98ca-473d-82dd-9e87924fb3e6', '두정점', 'https://firebasestorage.googleapis.com/v0/b/kh-basic-frontend-react-f5a7b.firebasestorage.app/o/PAIKBOOKER%2F03빽다방02.png?alt=media&token=244dcfc0-98ca-473d-82dd-9e87924fb3e6', '09:00~20:00', '서울시 두정동','19999997,3555545', '02-1234-5689');
 SELECT * FROM STORE;
 
 ALTER TABLE STORE
 DROP COLUMN RV_AVG;
+
+DROP TABLE STORE;
 
 DROP TABLE REVIEW;
 
